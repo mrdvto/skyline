@@ -27,11 +27,11 @@ jobs:
       # bumps these, which is the half that keeps pins from rotting.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # gitleaks resolves a commit range (HEAD^..HEAD), which the
-          # default single-commit checkout cannot provide. It scans the
-          # commits a PR adds, not all history, so a secret already in
-          # history would not be caught -- fine here, since every commit
-          # this repository has was scanned as it landed.
+          # gitleaks resolves a commit range, which the default
+          # single-commit checkout cannot provide. It scans the commits a
+          # PR adds, not all history, so a secret already in history would
+          # not be caught -- fine here, since every commit this repository
+          # has was scanned by the PR run that added it.
           fetch-depth: 0
 
       - name: Install linters
@@ -64,7 +64,20 @@ jobs:
       # Free for personal accounts and public repositories. A GitHub
       # Organization needs GITLEAKS_LICENSE, so this step is the one to
       # revisit if Skyline ever moves under an org.
+      #
+      # Pull requests only. On a push to main the action builds its range
+      # with `git log --no-merges --first-parent`, and every commit on
+      # main's first-parent line is a merge commit, so the range came out
+      # empty: the step reported "0 commits scanned" and passed anyway.
+      # The pull_request run is the gate, and it scans every commit as it
+      # lands.
+      #
+      # The empty range is a consequence of merging with merge commits.
+      # Turn on squash merging and main's first-parent line fills with
+      # real commits, at which point a scan on push would start doing
+      # work. See docs/adr/0007-secret-scan-on-pull-requests-only.md.
       - name: Secret scan
+        if: github.event_name == 'pull_request'
         uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -23,6 +23,10 @@ automatically on merge.
 
 Abandoning work? Close the PR *and* delete the branch, together.
 
+Dependabot is the one exception to step 1. Its branches carry no issue,
+because the diff and the changelog links in the PR body already say why the
+change exists. Those PRs are reviewed and merged like any other.
+
 ## Commits
 
 [Conventional Commits](https://www.conventionalcommits.org/):

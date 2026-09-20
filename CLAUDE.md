@@ -112,6 +112,20 @@ That single rule is what keeps the repository clean, and it is the one to
 enforce most strictly. A branch with no PR is invisible; a PR with no issue
 has no recorded reason to exist.
 
+The rule covers branches a person or Claude opens. Automated dependency
+branches (`dependabot/*`) are exempt: no bot files an issue first, and an
+issue per bump would be paperwork nobody reads. The diff and the changelog
+links in the bot's PR body are the record.
+
+Those PRs are reviewed and merged by the maintainer like any other. Nothing
+auto-merges on green, for the same reason Claude does not merge: the
+pipeline is linters, so "green" does not yet mean the bump is safe. Worth
+revisiting once CI runs tests.
+
+The SessionStart hook needs no exemption. Its orphan warning lists *local*
+branches with no upstream, and a `dependabot/*` branch only ever exists on
+the remote, so it never appears there.
+
 Honest caveat: Claude Code web sessions are assigned a branch name by the
 harness (for example `claude/blissful-dijkstra-b65fhv`), and that name
 cannot be chosen. So branch *naming* cannot be the anti-orphan mechanism —

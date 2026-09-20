@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# The linters CI runs, pinned so a run is reproducible and Dependabot has
+# something to bump. Install them locally with
+#   pip install -r requirements-ci.txt
+# and the checks behave exactly as they do in CI.
+#
+# PyYAML is deliberately absent: the YAML check uses the copy that ships
+# with the runner's python3, and pinning it here collides with the
+# distribution-managed PyYAML on a Debian-based machine.
+actionlint-py==1.7.12.24
+shellcheck-py==0.11.0.1

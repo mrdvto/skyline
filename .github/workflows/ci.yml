@@ -9,11 +9,23 @@ on:
 permissions:
   contents: read
 
+# A second push supersedes the first, so the older run has nothing left to
+# tell us. Safe here because no job deploys anything.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   checks:
     runs-on: ubuntu-latest
+    # The whole job takes about ten seconds. A minute of grace is plenty,
+    # and a hung runner stops before it burns the default six hours.
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      # Actions are pinned to commit SHAs, not tags: a tag can be moved,
+      # and then CI runs whatever it points at that day. Dependabot
+      # bumps these, which is the half that keeps pins from rotting.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           # gitleaks resolves a commit range (HEAD^..HEAD), which the
           # default single-commit checkout cannot provide. It scans the
@@ -22,23 +34,23 @@ jobs:
           # this repository has was scanned as it landed.
           fetch-depth: 0
 
+      - name: Install linters
+        run: pip install -r requirements-ci.txt
+
       - name: Shell scripts
         run: shellcheck .claude/hooks/*.sh
 
-      - name: Workflow and template YAML
-        run: |
-          python3 - <<'PY'
-          import glob, sys, yaml
-          bad = 0
-          for f in glob.glob('.github/**/*.yml', recursive=True):
-              try:
-                  yaml.safe_load(open(f))
-              except Exception as e:
-                  print(f'error: {f}: {e}', file=sys.stderr)
-                  bad += 1
-          print(f"{'FAIL' if bad else 'ok'}: {bad} invalid file(s)")
-          sys.exit(1 if bad else 0)
-          PY
+      # Parsing a workflow proves only that it is YAML. actionlint reads
+      # it as a workflow: unknown keys, an invalid `uses:`, a typo in a
+      # ${{ }} expression, and (through shellcheck) bugs in `run:` blocks.
+      - name: Workflow lint
+        run: actionlint
+
+      # Everything actionlint does not cover: .yaml as well as .yml, and
+      # YAML outside .github/, which is where a compose file or a device
+      # config will land.
+      - name: YAML validity
+        run: python3 scripts/check_yaml.py
 
       - name: ADRs and doc links
         run: python3 scripts/check_docs.py
@@ -47,6 +59,6 @@ jobs:
       # Organization needs GITLEAKS_LICENSE, so this step is the one to
       # revisit if Skyline ever moves under an org.
       - name: Secret scan
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

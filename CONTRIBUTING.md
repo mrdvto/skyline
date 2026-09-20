@@ -114,6 +114,13 @@ Never commit credentials, tokens, or OAuth secrets — including in tests and
 examples. If you find one committed, report it rather than quietly
 rewriting history.
 
+## Security reports and conduct
+
+A vulnerability goes through the private channels in
+[SECURITY.md](SECURITY.md), not a public issue.
+
+Participation is covered by the [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Architecture decisions
 
 Significant decisions live in [`docs/adr/`](docs/adr/). Read them before

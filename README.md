@@ -45,6 +45,8 @@ swap. See [ADR-6](docs/adr/0006-1gb-pi4-hardware-floor.md).
 - [Architecture decisions](docs/adr/) — what was chosen, and why
 - [CONTRIBUTING.md](CONTRIBUTING.md) — workflow and standards
 - [CLAUDE.md](CLAUDE.md) — operating guide for AI-assisted development
+- [SECURITY.md](SECURITY.md) — how to report a vulnerability privately
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — Contributor Covenant 3.0
 
 ## License
 

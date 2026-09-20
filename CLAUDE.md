@@ -61,12 +61,18 @@ a spinner that waits on the internet.
 
 ## How to write
 
-Both standards below live outside this repository, as account-scoped
-claude.ai skills. Nothing here enforces them. A session running without the
-maintainer's account will not load either one, and contributors will not
-have them. That is a deliberate trade: the repository stays free of vendored
-third-party content, at the cost of the standard not being self-describing.
-If either standard has to outlive one account, it moves into the repo.
+Two standards, and they now live in different places.
+
+ponytail is vendored into `.claude/skills/`, so it loads for anyone with
+this checkout. It moved here because upstream ships it as a Claude Code
+plugin, and a plugin installed on one machine does not follow you into a
+remote session -- web sessions were running without it and applying the
+ladder from memory. `.claude/skills/README.md` records where the copy came
+from and how to re-sync it.
+
+humanizer is still an account-scoped claude.ai skill. A contributor will
+not have it, and neither will a session running without the maintainer's
+account. Check the session's skill list rather than assuming.
 
 ### Code: ponytail
 
@@ -91,15 +97,17 @@ way out, so the markers can be collected later instead of rotting:
 # ponytail: linear scan, index it if events pass a few thousand
 ```
 
-If the skill is not loaded in a session, follow the ladder anyway. It is
-short enough to apply from the paragraph above.
+The vendored copy also brings `ponytail-review` (a diff read for
+over-engineering), `ponytail-audit` (the same, repository-wide), and
+`ponytail-debt`, which collects the `ponytail:` markers above into a ledger
+-- the part this file has always asked for and nothing did.
 
 ### Prose: humanizer
 
 Comments, documentation, commit bodies, and PR descriptions go through the
 `humanizer` skill: plain sentences, concrete detail, no promotional filler.
-Same caveat as above, and the same fallback. Write plainly if it is not
-loaded.
+It is account-scoped, so a session may not have it. Write plainly if it is
+not loaded; the sentence above is the whole of it.
 
 ## GitHub workflow
 
@@ -235,6 +243,11 @@ Every source file carries an SPDX identifier at the top:
 `scripts/check_spdx.py` checks this in CI, on `.py`, `.sh`, `.js`, `.ts`,
 `.svelte`, `.yml`, `.yaml` and `.toml`. What it skips, and why, is written
 into the script. Adding a language means adding it there.
+
+`.claude/skills/` holds a verbatim copy of ponytail, which is MIT and
+therefore compatible. Its licence and provenance sit beside it. Vendored
+files are not edited locally: an edit turns the next re-sync into a merge,
+and a standard everyone else reads differently is not a standard.
 
 Before adding a dependency, check its license. **GPLv2-only and
 proprietary licenses are incompatible** and must be refused — raise it

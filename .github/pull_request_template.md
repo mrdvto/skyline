@@ -16,7 +16,6 @@ Closes #
 ## Checks
 
 - [ ] Offline-first preserved (no UI path blocks on a remote API)
-- [ ] `SPDX-License-Identifier: AGPL-3.0-or-later` on new source files
 - [ ] New dependencies are license-compatible (no GPLv2-only, no proprietary)
 - [ ] No secrets, tokens, or credentials committed
 - [ ] ADR added or updated, if this changes an architectural decision

@@ -55,6 +55,12 @@ jobs:
       - name: ADRs and doc links
         run: python3 scripts/check_docs.py
 
+      # CLAUDE.md has required an SPDX header on every source file since
+      # the first commit, and nothing checked it until now. The licence is
+      # the point of an AGPL project.
+      - name: SPDX headers
+        run: python3 scripts/check_spdx.py
+
       # Free for personal accounts and public repositories. A GitHub
       # Organization needs GITLEAKS_LICENSE, so this step is the one to
       # revisit if Skyline ever moves under an org.

@@ -23,6 +23,10 @@ automatically on merge.
 
 Abandoning work? Close the PR *and* delete the branch, together.
 
+Dependabot is the one exception to step 1. Its branches carry no issue,
+because the diff and the changelog links in the PR body already say why the
+change exists. Those PRs are reviewed and merged like any other.
+
 ## Commits
 
 [Conventional Commits](https://www.conventionalcommits.org/):
@@ -90,6 +94,10 @@ Skyline is **AGPL-3.0-or-later**. Every source file starts with:
 # SPDX-License-Identifier: AGPL-3.0-or-later
 ```
 
+`scripts/check_spdx.py` enforces this in CI, on `.py`, `.sh`, `.js`,
+`.ts`, `.svelte`, `.yml`, `.yaml` and `.toml`. The script says which files
+are out of scope and why.
+
 Contributions are accepted under the same license. There is no CLA; the
 sign-off on your commit (`git commit -s`, per the
 [Developer Certificate of Origin](https://developercertificate.org/)) is
@@ -105,6 +113,13 @@ rather than working around it.
 Never commit credentials, tokens, or OAuth secrets — including in tests and
 examples. If you find one committed, report it rather than quietly
 rewriting history.
+
+## Security reports and conduct
+
+A vulnerability goes through the private channels in
+[SECURITY.md](SECURITY.md), not a public issue.
+
+Participation is covered by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Architecture decisions
 

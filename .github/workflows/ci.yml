@@ -13,10 +13,13 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
-          # gitleaks scans history, which needs more than the default
-          # single commit.
+          # gitleaks resolves a commit range (HEAD^..HEAD), which the
+          # default single-commit checkout cannot provide. It scans the
+          # commits a PR adds, not all history, so a secret already in
+          # history would not be caught -- fine here, since every commit
+          # this repository has was scanned as it landed.
           fetch-depth: 0
 
       - name: Shell scripts

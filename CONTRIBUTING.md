@@ -94,6 +94,10 @@ Skyline is **AGPL-3.0-or-later**. Every source file starts with:
 # SPDX-License-Identifier: AGPL-3.0-or-later
 ```
 
+`scripts/check_spdx.py` enforces this in CI, on `.py`, `.sh`, `.js`,
+`.ts`, `.svelte`, `.yml`, `.yaml` and `.toml`. The script says which files
+are out of scope and why.
+
 Contributions are accepted under the same license. There is no CLA; the
 sign-off on your commit (`git commit -s`, per the
 [Developer Certificate of Origin](https://developercertificate.org/)) is

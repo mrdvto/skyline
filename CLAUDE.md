@@ -154,6 +154,7 @@ shellcheck .claude/hooks/*.sh
 actionlint
 python3 scripts/check_yaml.py
 python3 scripts/check_docs.py
+python3 scripts/check_spdx.py
 ```
 
 Neither `shellcheck` nor `actionlint` is preinstalled in remote sessions,
@@ -230,6 +231,10 @@ Every source file carries an SPDX identifier at the top:
 ```python
 # SPDX-License-Identifier: AGPL-3.0-or-later
 ```
+
+`scripts/check_spdx.py` checks this in CI, on `.py`, `.sh`, `.js`, `.ts`,
+`.svelte`, `.yml`, `.yaml` and `.toml`. What it skips, and why, is written
+into the script. Adding a language means adding it there.
 
 Before adding a dependency, check its license. **GPLv2-only and
 proprietary licenses are incompatible** and must be refused — raise it

@@ -34,6 +34,28 @@ Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `perf`,
 
 Explain *why* in the body whenever the diff doesn't make it obvious.
 
+## Code style
+
+Skyline uses the [ponytail](https://github.com/DietrichGebert/ponytail)
+skill (MIT), vendored in `.claude/skills/`. The short version: before
+writing anything, check whether it needs to exist, whether this codebase
+already has it, whether the standard library or the platform covers it, and
+whether an installed dependency already does the job. Write the smallest
+thing that works.
+
+It pairs well with the 1GB budget, since the cheapest dependency is the one
+never added.
+
+It does not apply to validation at trust boundaries, error handling that
+prevents data loss, security, or accessibility. Those get written properly.
+
+A shortcut taken on purpose gets a comment naming its ceiling and the way
+out:
+
+```python
+# ponytail: linear scan, index it if events pass a few thousand
+```
+
 ## The memory budget
 
 Skyline's hardware floor is a **1GB Raspberry Pi 4**

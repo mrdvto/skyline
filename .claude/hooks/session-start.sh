@@ -18,7 +18,11 @@ DEFAULT_BRANCH=main
 # Prunes refs for branches deleted on merge. Without this, stale refs make
 # a branch look ahead of a remote that no longer exists, which is what made
 # the stop hook report phantom unpushed commits.
-git fetch --prune --quiet origin "$DEFAULT_BRANCH" 2>/dev/null
+#
+# No refspec, deliberately. Passing one ("origin main") limits pruning to
+# refs matching it, so refs for deleted branches survive and the bug this
+# is here to prevent still happens.
+git fetch --prune --quiet origin 2>/dev/null
 
 branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")
 echo "Skyline — branch: $branch"

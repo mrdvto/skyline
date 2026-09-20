@@ -137,13 +137,34 @@ maintainer agreeing. Until then: open the PR, get it green, stop.
 
 `main` is always deployable. Never push to it directly.
 
+### After the branch's PR merges
+
+A merged pull request is finished. It cannot track new work, and commits
+stacked on top of merged history do not belong to anything.
+
+So when the designated branch's PR has merged, restart the branch from the
+default branch rather than continuing on it, keeping the same name:
+
+```
+git fetch origin main && git checkout -B <branch> origin/main
+```
+
+Any PR opened afterwards is a new PR against a new issue. If the branch
+still carries unmerged commits, rebase them onto the new base instead of
+discarding them.
+
+The SessionStart hook detects this case and says so at session open, but
+check it yourself if the hook has not run.
+
 ### Branch hygiene
 
 - Head branches delete automatically on merge (repository setting).
 - Abandoned work gets its PR closed **and** its branch deleted in the same
   action. Never leave one without the other.
 - Before starting a session, check for stale branches with no open PR and
-  raise them rather than adding to the pile.
+  raise them rather than adding to the pile. The SessionStart hook in
+  `.claude/hooks/` prints these, prunes refs for branches deleted on merge,
+  and flags a branch that needs restarting.
 
 ## Commits
 

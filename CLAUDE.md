@@ -12,6 +12,10 @@ The Pi is a **kiosk appliance**: it boots straight into a fullscreen browser
 showing the Skyline web app, served by a local backend on the same device.
 Because it's a web app, phones and tablets on the LAN get access for free.
 
+Where the project currently stands, and what is next, lives in the GitHub
+issues. This file holds the rules, which change far less often than the
+state does.
+
 ## Hard constraints
 
 These are not preferences. Violating them means the work is wrong.
@@ -125,6 +129,31 @@ Claude's control, use `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, or
 5. Get CI green.
 6. Mark ready for review.
 
+### Verifying before you push
+
+CI runs the checks below. Run them first. A push that turns CI red costs a
+round trip and, once there are reviewers, some of their patience.
+
+```
+shellcheck .claude/hooks/*.sh
+python3 scripts/check_docs.py
+python3 -c "import yaml, glob; [yaml.safe_load(open(f)) for f in glob.glob('.github/**/*.yml', recursive=True)]"
+```
+
+`shellcheck` is not preinstalled in remote sessions: `pip install
+shellcheck-py`. The gitleaks step runs only in CI, because its binary
+cannot be fetched here, so it is the one check that lands unverified.
+
+**Read the log of any check you added or changed, even when it passes.** A
+green tick says a command exited 0, not that it did what you think. The
+first CI run on this repository passed while the comment on its own
+gitleaks step described behaviour the step was not performing; reading the
+log caught it, the green tick did not.
+
+**Break a new check on purpose once and confirm it fails.** A check that
+cannot fail gates nothing, and a pipeline of those is worse than none,
+because it looks like coverage.
+
 ### Merging
 
 **Claude does not merge to `main` right now.** The agreed end state is that
@@ -137,13 +166,34 @@ maintainer agreeing. Until then: open the PR, get it green, stop.
 
 `main` is always deployable. Never push to it directly.
 
+### After the branch's PR merges
+
+A merged pull request is finished. It cannot track new work, and commits
+stacked on top of merged history do not belong to anything.
+
+So when the designated branch's PR has merged, restart the branch from the
+default branch rather than continuing on it, keeping the same name:
+
+```
+git fetch origin main && git checkout -B <branch> origin/main
+```
+
+Any PR opened afterwards is a new PR against a new issue. If the branch
+still carries unmerged commits, rebase them onto the new base instead of
+discarding them.
+
+The SessionStart hook detects this case and says so at session open, but
+check it yourself if the hook has not run.
+
 ### Branch hygiene
 
 - Head branches delete automatically on merge (repository setting).
 - Abandoned work gets its PR closed **and** its branch deleted in the same
   action. Never leave one without the other.
 - Before starting a session, check for stale branches with no open PR and
-  raise them rather than adding to the pile.
+  raise them rather than adding to the pile. The SessionStart hook in
+  `.claude/hooks/` prints these, prunes refs for branches deleted on merge,
+  and flags a branch that needs restarting.
 
 ## Commits
 
@@ -185,6 +235,26 @@ Stop and raise these rather than deciding unilaterally:
 - Changes to the kiosk boot path (a bad one bricks the appliance for a
   non-technical family)
 - Architectural decisions worth an ADR
+- Where third-party tooling lives: vendored into this repository, an
+  account-scoped skill, or a local install. Cheap to reverse and therefore
+  tempting to just decide, but reversing it leaves visible churn in the
+  history
+
+## This environment
+
+True of remote sessions. A local checkout will differ, so check rather than
+assume.
+
+- **No `gh` CLI.** Use the GitHub tools for issues, pull requests, checks,
+  and job logs.
+- **Outbound HTTPS is filtered.** `api.github.com` and `gnu.org` are
+  blocked; git clones from `github.com` and fetches from
+  `raw.githubusercontent.com` work. This is why gitleaks cannot be tested
+  locally.
+- **The container is ephemeral.** Anything uncommitted disappears when it
+  is reclaimed. Tooling that should survive belongs in this repository or
+  in an account-scoped skill, never installed into the session and left
+  there.
 
 ## Architecture decisions
 

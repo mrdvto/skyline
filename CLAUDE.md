@@ -57,13 +57,20 @@ a spinner that waits on the internet.
 
 ## How to write
 
+Both standards below live outside this repository, as account-scoped
+claude.ai skills. Nothing here enforces them. A session running without the
+maintainer's account will not load either one, and contributors will not
+have them. That is a deliberate trade: the repository stays free of vendored
+third-party content, at the cost of the standard not being self-describing.
+If either standard has to outlive one account, it moves into the repo.
+
 ### Code: ponytail
 
-Code follows the `ponytail` skill, vendored in `.claude/skills/`. It is a
-ladder you climb before writing anything: does this need to exist, does the
-codebase already have it, does the stdlib do it, does the platform do it
-natively, does an installed dependency cover it, can it be one line. Stop at
-the first rung that holds.
+Code follows [ponytail](https://github.com/DietrichGebert/ponytail) (MIT).
+It is a ladder you climb before writing anything: does this need to exist,
+does the codebase already have it, does the stdlib do it, does the platform
+do it natively, does an installed dependency cover it, can it be one line.
+Stop at the first rung that holds.
 
 This happens to pay Skyline's memory budget for free. The cheapest
 dependency is the one never added, and `<input type="date">` costs nothing
@@ -74,27 +81,21 @@ that prevents data loss, security, accessibility. Cutting those is not
 laziness, it is a bug with a deadline.
 
 Deliberate shortcuts get a `ponytail:` comment naming the ceiling and the
-way out, so `ponytail-debt` can collect them later instead of letting them
-rot:
+way out, so the markers can be collected later instead of rotting:
 
 ```python
 # ponytail: linear scan, index it if events pass a few thousand
 ```
 
-Sibling skills: `ponytail-review` (diff review for over-building),
-`ponytail-audit` (whole repo), `ponytail-debt` (collect the markers),
-`ponytail-help`, `ponytail-gain`.
+If the skill is not loaded in a session, follow the ladder anyway. It is
+short enough to apply from the paragraph above.
 
 ### Prose: humanizer
 
 Comments, documentation, commit bodies, and PR descriptions go through the
-`humanizer` skill.
-
-One caveat. `humanizer` is a personal claude.ai skill tied to the
-maintainer's account, not a file in this repository. A session running
-without that account cannot load it, and future contributors will not have
-it either. `ponytail` is vendored here and has no such problem. If the prose
-standard needs to outlive one account, it has to move into the repo too.
+`humanizer` skill: plain sentences, concrete detail, no promotional filler.
+Same caveat as above, and the same fallback. Write plainly if it is not
+loaded.
 
 ## GitHub workflow
 

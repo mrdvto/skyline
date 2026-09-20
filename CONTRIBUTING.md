@@ -36,12 +36,14 @@ Explain *why* in the body whenever the diff doesn't make it obvious.
 
 ## Code style
 
-Skyline uses the [ponytail](https://github.com/DietrichGebert/ponytail)
-skill (MIT), vendored in `.claude/skills/`. The short version: before
-writing anything, check whether it needs to exist, whether this codebase
-already has it, whether the standard library or the platform covers it, and
-whether an installed dependency already does the job. Write the smallest
-thing that works.
+Skyline follows [ponytail](https://github.com/DietrichGebert/ponytail)
+(MIT). It is not vendored here, so install it yourself if you want the
+agent-enforced version. The rule stands either way.
+
+Before writing anything, check whether it needs to exist, whether this
+codebase already has it, whether the standard library or the platform
+covers it, and whether an installed dependency already does the job. Write
+the smallest thing that works.
 
 It pairs well with the 1GB budget, since the cheapest dependency is the one
 never added.

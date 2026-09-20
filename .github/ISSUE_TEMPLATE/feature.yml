@@ -1,0 +1,44 @@
+name: Feature
+description: A capability Skyline should have
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can't the family do today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should Skyline do instead?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Calendar
+        - To-dos
+        - Sync (Google / CalDAV)
+        - Home Assistant
+        - Kiosk / display
+        - Backend / infrastructure
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Memory and offline impact
+      description: >
+        Skyline's floor is a 1GB Pi 4 and it must work offline. Any new
+        dependencies, background work, or network dependencies here?
+  - type: textarea
+    id: done
+    attributes:
+      label: Done looks like
+      description: How do we know this is finished?

@@ -74,6 +74,15 @@ humanizer is still an account-scoped claude.ai skill. A contributor will
 not have it, and neither will a session running without the maintainer's
 account. Check the session's skill list rather than assuming.
 
+Use the name that actually invokes the skill. The vendored copies load
+under bare names -- `ponytail`, `ponytail-review`, `ponytail-audit`,
+`ponytail-debt` -- but humanizer is namespaced, and
+`anthropic-skills:humanizer` is the name that resolves. Plain `humanizer`
+does not. This is not pedantry: a session reported humanizer missing and
+wrote the prose by hand while the skill sat in its list under the longer
+name. Read the list before concluding a tool is absent, and match the name
+character for character.
+
 ### Code: ponytail
 
 Code follows [ponytail](https://github.com/DietrichGebert/ponytail) (MIT).
@@ -105,9 +114,26 @@ over-engineering), `ponytail-audit` (the same, repository-wide), and
 ### Prose: humanizer
 
 Comments, documentation, commit bodies, and PR descriptions go through the
-`humanizer` skill: plain sentences, concrete detail, no promotional filler.
+`anthropic-skills:humanizer` skill: plain sentences, concrete detail, no promotional filler.
 It is account-scoped, so a session may not have it. Write plainly if it is
 not loaded; the sentence above is the whole of it.
+
+### Text that is not ours: fetch it, never recall it
+
+Any text belonging to someone else -- a licence, a code of conduct, a
+spec, a config another project publishes -- gets fetched from its source.
+Never reproduced from memory.
+
+`CODE_OF_CONDUCT.md` is Contributor Covenant 3.0, which differs from 2.1
+in its section names, its enforcement model and its licence (CC BY-SA 4.0
+rather than CC BY 4.0). Writing it from recall would have produced
+something that looked right and carried the real upstream attribution
+block while not being the document it named. That is a forgery of a
+licensed text, not a typo.
+
+`raw.githubusercontent.com` is reachable from a remote session, which is
+how that file got its real contents. If a text cannot be fetched, say so
+and stop, rather than approximating it.
 
 ## GitHub workflow
 

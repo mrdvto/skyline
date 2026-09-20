@@ -135,14 +135,18 @@ CI runs the checks below. Run them first. A push that turns CI red costs a
 round trip and, once there are reviewers, some of their patience.
 
 ```
+pip install -r requirements-ci.txt
 shellcheck .claude/hooks/*.sh
+actionlint
+python3 scripts/check_yaml.py
 python3 scripts/check_docs.py
-python3 -c "import yaml, glob; [yaml.safe_load(open(f)) for f in glob.glob('.github/**/*.yml', recursive=True)]"
 ```
 
-`shellcheck` is not preinstalled in remote sessions: `pip install
-shellcheck-py`. The gitleaks step runs only in CI, because its binary
-cannot be fetched here, so it is the one check that lands unverified.
+Neither `shellcheck` nor `actionlint` is preinstalled in remote sessions,
+which is what `requirements-ci.txt` is for -- it pins the versions CI
+uses, so a local run and a CI run agree. The gitleaks step runs only in
+CI, because its binary cannot be fetched here, so it is the one check that
+lands unverified.
 
 **Read the log of any check you added or changed, even when it passes.** A
 green tick says a command exited 0, not that it did what you think. The

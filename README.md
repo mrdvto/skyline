@@ -48,7 +48,7 @@ swap. See [ADR-6](docs/adr/0006-1gb-pi4-hardware-floor.md).
 
 ## License
 
-Copyright (C) 2026 Skyline contributors
+Copyright (C) 2026 David Vuong
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by

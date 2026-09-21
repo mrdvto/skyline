@@ -40,12 +40,13 @@ swap. See [ADR-6](docs/adr/0006-1gb-pi4-hardware-floor.md).
 | Backend | Python 3.11+ / FastAPI |
 | Frontend | Svelte |
 | Storage | SQLite (WAL) |
-| Display | Chromium kiosk on Raspberry Pi OS Lite |
+| Display | Chromium in `cage` on Raspberry Pi OS Lite (64-bit) |
 | Hardware floor | Raspberry Pi 4, 1GB RAM |
 
 ## Documentation
 
 - [Software design document](docs/sdd.md) — how Skyline works
+- [Setting up the Pi](docs/pi-setup.md) — blank card to a kiosk on the wall
 - [Architecture decisions](docs/adr/) — what was chosen, and why
 - [CONTRIBUTING.md](CONTRIBUTING.md) — workflow and standards
 - [CLAUDE.md](CLAUDE.md) — operating guide for AI-assisted development

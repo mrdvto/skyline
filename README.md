@@ -6,8 +6,9 @@ household coordination on a Raspberry Pi with a touch monitor.
 Self-hosted. Offline-first. Free software.
 
 > **Status: early development.** Nothing is installable yet. The
-> architecture is settled and recorded in [`docs/adr/`](docs/adr/); the
-> first vertical slice is being built.
+> architecture is settled in [`docs/adr/`](docs/adr/) and the v1.0 design
+> is written down in [`docs/sdd.md`](docs/sdd.md); the first vertical
+> slice is being built.
 
 ## What it is
 
@@ -15,8 +16,10 @@ A Raspberry Pi mounted behind a touchscreen, booting straight into Skyline.
 The whole family sees the same calendar and task list, touches it to make
 changes, and never has to open an app to find out who's picking up whom.
 
-Because Skyline is a web application served from the Pi, every phone and
-tablet on the network gets the same view with no extra install.
+Because Skyline is a web application served from the Pi, phones and
+tablets on the network reach it with no extra install. In v1.0 they can
+read the calendar and add events quickly; the wall screen is where
+everything else happens.
 
 ## Planned capabilities
 
@@ -42,6 +45,7 @@ swap. See [ADR-6](docs/adr/0006-1gb-pi4-hardware-floor.md).
 
 ## Documentation
 
+- [Software design document](docs/sdd.md) — how Skyline works
 - [Architecture decisions](docs/adr/) — what was chosen, and why
 - [CONTRIBUTING.md](CONTRIBUTING.md) — workflow and standards
 - [CLAUDE.md](CLAUDE.md) — operating guide for AI-assisted development

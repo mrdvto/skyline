@@ -51,9 +51,18 @@ Total system RAM is 1024MB. The working budget:
 Consequences that bind every change:
 
 - **Prefer lean dependencies.** Before adding any library, check its import
-  cost. Specifically: use `google-auth` + `httpx` against Google's REST
-  endpoints, **not** `google-api-python-client` (it loads large discovery
-  documents into memory). Prefer `aiosqlite` over an ORM.
+  cost. Specifically: use `httpx` against Google's REST endpoints, **not**
+  `google-api-python-client`. Prefer `aiosqlite` over an ORM.
+
+  The parenthetical that used to sit here said
+  `google-api-python-client` loads large discovery documents into memory.
+  The spike for #29 measured that and it is not true: the Calendar
+  discovery document costs 0.5MB, and the two stacks are within 0.1MB of
+  each other. The rule survives for other reasons, which are in
+  [ADR-13](docs/adr/0013-google-calendar-authorization-flow.md) along with
+  the finding that `google-auth` is the expensive part and probably should
+  go too. ADR-13 is Proposed, so `google-auth` is not banned yet -- but do
+  not repeat the discovery-document reason, it was never measured.
 - **Never assume swap.** Swapping to the SD card destroys both performance
   and the card. `zram` only.
 - **Memory regressions are bugs.** If a change raises steady-state RSS,
@@ -364,14 +373,21 @@ assume.
 
 - **No `gh` CLI.** Use the GitHub tools for issues, pull requests, checks,
   and job logs.
-- **Outbound HTTPS is filtered.** `gnu.org`, `raspberrypi.com` and
-  `downloads.raspberrypi.com` fail at the proxy tunnel. Blocking happens at
+- **Outbound HTTPS is filtered.** `gnu.org`, `raspberrypi.com`,
+  `downloads.raspberrypi.com`, `developers.google.com` and
+  `console.cloud.google.com` fail at the proxy tunnel. Blocking happens at
   `CONNECT`, before any path is visible, so it is whole hosts rather than
   paths. `api.github.com` is different: it connects and answers, then refuses
   at the application layer, so a session that probes it sees a 200 and should
   still use the GitHub tools. Working: git clones from `github.com`, fetches
-  from `raw.githubusercontent.com`, and Google's OAuth and API hosts. This is
-  why gitleaks cannot be tested locally, and why the Pi release version in
+  from `raw.githubusercontent.com`, and Google's OAuth and API hosts --
+  `accounts.google.com`, `oauth2.googleapis.com` and `www.googleapis.com` all
+  answer. Google's *documentation* is the part that does not, which is a
+  sharper edge than it sounds: a question about Google's API can be tested
+  against the live endpoint but not read about, so anything the endpoint will
+  not answer has to be left open rather than recalled. #29 hit this and said
+  so rather than guessing. It is also why gitleaks cannot be tested locally,
+  and why the Pi release version in
   [ADR-12](docs/adr/0012-raspberry-pi-os-lite-and-cage.md) has to come off the
   hardware rather than the vendor's site.
 - **The container is ephemeral.** Anything uncommitted disappears when it

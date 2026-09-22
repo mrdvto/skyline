@@ -18,6 +18,7 @@ Closes #
 - [ ] Offline-first preserved (no UI path blocks on a remote API)
 - [ ] New dependencies are license-compatible (no GPLv2-only, no proprietary)
 - [ ] No secrets, tokens, or credentials committed
+- [ ] Any command added to documentation was run, with the output in Verification
 - [ ] ADR added or updated, if this changes an architectural decision
 
 ## Verification

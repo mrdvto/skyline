@@ -215,10 +215,13 @@ nothing. It read as correct, it had a paragraph explaining why it was there,
 and it was merged without ever being run. Where a command is supposed to
 change something, check the thing before and after, not just the exit code.
 
-**Run `ponytail-review` on the diff before pushing.** It is vendored in
-`.claude/skills/`, so it is available in every session, and it costs one pass.
-The `pr-critic` agent in `.claude/agents/` is the wider version of the same
-idea: one pass, blocking and non-blocking findings, no score and no loop. A
+**Run `ponytail-review` on the diff before pushing, and `pr-critic` before
+marking a PR ready.** ponytail-review is vendored in `.claude/skills/`, so it
+is available in every session, and it costs one pass. The `pr-critic` agent in
+`.claude/agents/` is the wider version of the same idea: one pass, blocking and
+non-blocking findings, no score and no loop. Its own description says when to
+run it, but that is an invocation hint rather than a rule, which is why the
+timing is written here too. A
 scored critic run in a loop was considered and rejected, because iterating
 until a reviewer is satisfied optimises for the reviewer rather than for
 correctness, and a second model reading the same diff shares the first one's

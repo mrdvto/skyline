@@ -36,10 +36,16 @@ your way to.
 
 ## For code
 
-Load the `ponytail` skill and review against its ladder: does this need to
-exist, does the codebase already have it, does the stdlib do it, does the
-platform do it natively, does a dependency already cover it, can it be one
-line.
+Read `.claude/skills/ponytail/SKILL.md` and review against its ladder: does
+this need to exist, does the codebase already have it, does the stdlib do it,
+does the platform do it natively, does a dependency already cover it, can it
+be one line.
+
+Read the file rather than invoking the skill by name. The `tools:` line above
+is an allowlist, so this agent has no `Skill` tool, and the skill is a plain
+file in this repository anyway. CLAUDE.md records a session that concluded a
+skill was missing when it was listed under a different name; a path does not
+have that failure mode.
 
 What ponytail never trims, and neither do you: input validation at trust
 boundaries, error handling that prevents data loss, security, accessibility.

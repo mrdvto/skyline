@@ -228,7 +228,7 @@ So when the designated branch's PR has merged, restart the branch from the
 default branch rather than continuing on it, keeping the same name:
 
 ```
-git fetch --prune origin main && git checkout -B <branch> origin/main
+git fetch --prune origin && git checkout -B <branch> origin/main
 ```
 
 `--prune` is not decoration. Head branches delete on merge, so without it
@@ -236,6 +236,11 @@ git fetch --prune origin main && git checkout -B <branch> origin/main
 that compares `HEAD` against `origin/<current-branch>` then reports commits
 that are already on the remote as unpushed, which is what the Claude Code stop
 hook did after #22.
+
+The fetch takes no branch argument on purpose. `--prune` only removes refs
+covered by the refspec being fetched, so `git fetch --prune origin main`
+prunes nothing outside `main` and leaves the stale ref exactly where it was.
+That is what #24 shipped, and #25 is it being caught.
 
 Any PR opened afterwards is a new PR against a new issue. If the branch
 still carries unmerged commits, rebase them onto the new base instead of

@@ -27,7 +27,14 @@ These are not preferences. Violating them means the work is wrong.
 | Backend | Python 3.11+ / FastAPI |
 | Frontend | Svelte |
 | Database | SQLite (WAL mode) |
-| Display | Chromium kiosk (swappable for `cog`) |
+| Display | Chromium (swappable for `cog`) in `cage` |
+| Appliance OS | Raspberry Pi OS Lite, 64-bit |
+
+Two of those rows record a current decision rather than an immovable one.
+[ADR-12](docs/adr/0012-raspberry-pi-os-lite-and-cage.md) keeps `labwc` as a
+documented fallback if `cage` fights us, and says a 32-bit reflash is the
+experiment to run if the memory budget fails on arm64. Proposing either is
+not a violation; silently changing the kiosk boot path is.
 
 ### The 1GB budget
 
@@ -60,6 +67,23 @@ against Google Calendar, CalDAV, and Home Assistant. No screen may render
 a spinner that waits on the internet.
 
 ## How to write
+
+### Replies in chat
+
+Brief. Answer, then stop. No preamble, no recap of what was just done unless
+it changed, no restating the question. Bullets over paragraphs, and grammar
+comes second to being short.
+
+Brevity is not omission. Say when something is uncertain, when a claim was not
+verified, and when the maintainer is wrong. Those earn their words; a summary
+of work they just watched does not.
+
+This is separate from the standards below, which govern code and prose that
+land in the repository. It restates the maintainer's account-level preference
+so it still applies in sessions running without that account; if the two ever
+disagree, the account preference wins.
+
+### Code and prose that ship
 
 Two standards, and they now live in different places.
 
@@ -340,10 +364,16 @@ assume.
 
 - **No `gh` CLI.** Use the GitHub tools for issues, pull requests, checks,
   and job logs.
-- **Outbound HTTPS is filtered.** `api.github.com` and `gnu.org` are
-  blocked; git clones from `github.com` and fetches from
-  `raw.githubusercontent.com` work. This is why gitleaks cannot be tested
-  locally.
+- **Outbound HTTPS is filtered.** `gnu.org`, `raspberrypi.com` and
+  `downloads.raspberrypi.com` fail at the proxy tunnel. Blocking happens at
+  `CONNECT`, before any path is visible, so it is whole hosts rather than
+  paths. `api.github.com` is different: it connects and answers, then refuses
+  at the application layer, so a session that probes it sees a 200 and should
+  still use the GitHub tools. Working: git clones from `github.com`, fetches
+  from `raw.githubusercontent.com`, and Google's OAuth and API hosts. This is
+  why gitleaks cannot be tested locally, and why the Pi release version in
+  [ADR-12](docs/adr/0012-raspberry-pi-os-lite-and-cage.md) has to come off the
+  hardware rather than the vendor's site.
 - **The container is ephemeral.** Anything uncommitted disappears when it
   is reclaimed. Tooling that should survive belongs in this repository or
   in an account-scoped skill, never installed into the session and left

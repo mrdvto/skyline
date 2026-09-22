@@ -61,6 +61,21 @@ a spinner that waits on the internet.
 
 ## How to write
 
+### Replies in chat
+
+Brief. Answer, then stop. No preamble, no recap of what was just done unless
+it changed, no restating the question. Bullets over paragraphs, and grammar
+comes second to being short.
+
+Brevity is not omission. Say when something is uncertain, when a claim was not
+verified, and when the maintainer is wrong. Those earn their words; a summary
+of work they just watched does not.
+
+This is separate from the standards below, which govern text that lands in the
+repository.
+
+### Prose that ships
+
 Two standards, and they now live in different places.
 
 ponytail is vendored into `.claude/skills/`, so it loads for anyone with

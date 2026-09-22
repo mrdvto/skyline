@@ -288,8 +288,16 @@ webhook URL, which v1.0 does not have.
 ### 5.2 Google
 
 `google-auth` for tokens, `httpx` against the REST endpoints directly.
-`google-api-python-client` is not used; it loads large discovery documents
-into memory, which the budget in §14 does not allow.
+`google-api-python-client` is not used.
+
+This section used to justify that by saying `google-api-python-client` loads
+large discovery documents into memory. The spike for #29 measured it: the
+Calendar discovery document costs 0.61MB and the two stacks are within 0.1MB
+of each other, so the justification was false and is removed rather than
+reworded. [ADR-13](adr/0013-google-calendar-authorization-flow.md) has the
+numbers and the reasons that do hold. It also proposes dropping `google-auth`,
+which would rewrite the first line above; that waits on the ADR being
+accepted.
 
 Pull is `events.list` with the stored `syncToken`, so only deltas cross
 the wire. A `410 Gone` means the token expired: discard it and do a full

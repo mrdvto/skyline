@@ -57,12 +57,17 @@ Consequences that bind every change:
   The parenthetical that used to sit here said
   `google-api-python-client` loads large discovery documents into memory.
   The spike for #29 measured that and it is not true: the Calendar
-  discovery document costs 0.5MB, and the two stacks are within 0.1MB of
-  each other. The rule survives for other reasons, which are in
+  discovery document costs 0.61MB, and the two stacks land on the same
+  figure. The rule survives for other reasons, which are in
   [ADR-13](docs/adr/0013-google-calendar-authorization-flow.md) along with
-  the finding that `google-auth` is the expensive part and probably should
-  go too. ADR-13 is Proposed, so `google-auth` is not banned yet -- but do
-  not repeat the discovery-document reason, it was never measured.
+  the finding that `google-auth` is nearly the whole cost and probably
+  should go too. ADR-13 is Proposed, so `google-auth` is not banned yet --
+  but do not repeat the discovery-document reason, it was never measured.
+
+  `CONTRIBUTING.md` and `docs/sdd.md` §5.2 carried the same claim. They are
+  corrected too. A rule that says "do not repeat this" is worth nothing
+  while another file in the same repository still says it, which is what
+  shipped in the first commit of #32 and is the reason this note exists.
 - **Never assume swap.** Swapping to the SD card destroys both performance
   and the card. `zram` only.
 - **Memory regressions are bugs.** If a change raises steady-state RSS,

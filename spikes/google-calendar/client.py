@@ -55,7 +55,8 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         # The state check is not optional even in a spike: without it this
         # endpoint accepts an authorization code from anything else on the
         # machine that can reach the loopback port.
-        if query.get("state", [None])[0] == self.server.expected_state:
+        got = query.get("state", [""])[0]
+        if secrets.compare_digest(got, self.server.expected_state):
             self.server.code = query.get("code", [None])[0]
         self.send_response(200)
         self.end_headers()
@@ -74,6 +75,9 @@ def wait_for_code(server, state):
     """
     server.expected_state = state
     server.code = None
+    # Without this, a consent screen someone closed leaves the spike
+    # blocked on accept() with no way out but ctrl-c.
+    server.timeout = 300
     server.handle_request()
     return server.code
 
@@ -109,16 +113,19 @@ def authorize(client_id, client_secret):
     }
     print("Open this, then sign in:\n")
     print(f"  {AUTH}?{urllib.parse.urlencode(params)}\n")
-    code = wait_for_code(server, state)
+    try:
+        code = wait_for_code(server, state)
+    finally:
+        server.server_close()
     if not code:
-        sys.exit("no authorization code came back (state mismatch, or denied)")
+        sys.exit("no code came back: timed out, denied, or wrong state")
 
     r = httpx.post(
         TOKEN,
         data={
             "client_id": client_id,
             "client_secret": client_secret,
-            "code": code[0],
+            "code": code,
             "code_verifier": verifier,
             "grant_type": "authorization_code",
             "redirect_uri": redirect,
@@ -148,7 +155,7 @@ def events(token, days=7):
 
     `singleEvents` asks Google to expand recurrence server-side. The real
     sync worker will not do that -- it stores the series and expands
-    locally, per SDD 3.1 -- but this spike is reading, not syncing.
+    locally, per SDD 4.4 -- but this spike is reading, not syncing.
     """
     now = datetime.now(timezone.utc)
     params = {

@@ -71,9 +71,11 @@ most likely to make an otherwise good change unacceptable.
 Before adding a dependency, check what it costs to import. Some specifics
 that already bind:
 
-- `google-auth` + `httpx` against Google's REST endpoints — **not**
-  `google-api-python-client`, which loads large discovery documents into
-  memory.
+- `httpx` against Google's REST endpoints — **not**
+  `google-api-python-client`. This used to say the latter loads large
+  discovery documents into memory; the spike for #29 measured that and it is
+  false, so do not repeat it. The rule stands for the reasons in
+  [ADR-13](docs/adr/0013-google-calendar-authorization-flow.md).
 - `aiosqlite` rather than an ORM.
 
 If a change raises steady-state RSS, say so in the PR with numbers. Memory

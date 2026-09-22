@@ -11,8 +11,9 @@ repeatable inside one: the second import of a module is free. The child
 reports its own peak RSS from /proc, and the parent subtracts a baseline
 interpreter so the figure is the library rather than CPython.
 
-Read `python3 measure.py --help` for the caveat about which machine you
-are on. It matters more than the numbers do.
+Every run prints the caveat about which machine you are on. It matters
+more than the numbers do, and a footer travels with a copy-paste in a way
+that a --help screen does not.
 """
 
 import json
@@ -20,8 +21,9 @@ import subprocess
 import sys
 
 # The import a real caller makes, not the cheapest one that type-checks.
-# `google-auth` is only half the cost of the first stack; the transport
-# and the HTTP client are what a sync worker actually loads.
+# Measured marginally, `google-auth` is nearly all of the first stack:
+# adding it on top of `httpx` costs 18.5MB, while adding `httpx` on top of
+# it costs 1.0MB. That asymmetry is what ADR-13 is built on.
 CASES = {
     "baseline": "",
     # What this spike's client.py actually imports. Listed first because

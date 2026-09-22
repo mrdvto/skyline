@@ -54,9 +54,9 @@ followed is a guess with formatting.
    export SKYLINE_CLIENT_SECRET=...
    ```
 
-   The "secret" in a desktop OAuth client is not really a secret -- it ships
-   inside any installed application that uses one, and Google's own
-   documentation says as much. It still does not go in the repository. A rule
+   The "secret" in a desktop OAuth client is not much of a secret -- it ships
+   inside every installed copy of any application that uses one, so anyone
+   with the application has it. It still does not go in the repository. A rule
    with exceptions is a rule nobody can check.
 
 ## The seven-day problem

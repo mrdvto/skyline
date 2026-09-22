@@ -14,7 +14,10 @@ looks like nothing at all until someone uses it.
     python3 test_client.py
 """
 
+import contextlib
 import http.server
+import io
+import re
 import threading
 import urllib.request
 
@@ -66,6 +69,53 @@ def callback(query):
 
 def test_loopback_takes_the_code_when_state_matches():
     assert callback("code=abc&state=right") == "abc"
+
+
+def test_authorize_posts_the_whole_code():
+    """Drive authorize() end to end against a stand-in token endpoint.
+
+    This check exists because the real thing was wrong. wait_for_code()
+    returns a string, and authorize() went on indexing it like the list it
+    used to be, so the POST carried the first character of the
+    authorization code and Google would have answered invalid_grant. No
+    other check covered authorize(), which is the only function here that
+    both parses and sends.
+    """
+    posted = {}
+
+    def fake_post(url, data=None, **kw):
+        posted.update(data or {})
+        return httpx.Response(
+            200, json={"refresh_token": "rt"}, request=httpx.Request("POST", url)
+        )
+
+    printed = io.StringIO()
+    original = client.httpx.post
+    client.httpx.post = fake_post
+    try:
+        result = {}
+        with contextlib.redirect_stdout(printed):
+            thread = threading.Thread(
+                target=lambda: result.update(rt=client.authorize("id", "secret"))
+            )
+            thread.start()
+            # The port is not returned, so read it back out of the URL
+            # authorize() prints -- which is what the operator does too.
+            port = None
+            while port is None:
+                match = re.search(r"127\.0\.0\.1%3A(\d+)", printed.getvalue())
+                port = match and match.group(1)
+            urllib.request.urlopen(
+                f"http://127.0.0.1:{port}/?code=4%2F0AXrealcode&state="
+                + re.search(r"state=([^&]+)", printed.getvalue()).group(1)
+            ).read()
+            thread.join(timeout=5)
+
+    finally:
+        client.httpx.post = original
+
+    assert posted["code"] == "4/0AXrealcode", posted["code"]
+    assert result["rt"] == "rt", result
 
 
 def test_loopback_ignores_a_wrong_or_missing_state():

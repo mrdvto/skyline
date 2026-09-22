@@ -2,36 +2,62 @@
 
 Throwaway code for [issue #29](https://github.com/mrdvto/skyline/issues/29).
 It is here to be measured and argued with, then deleted once the real sync
-worker exists. Nothing in `skyline/` should import it.
+worker exists. Nothing in the backend should import it, once a backend
+exists.
 
 ## What it found
 
-The claim in [ADR-5](../../docs/adr/0005-python-fastapi-and-svelte.md) is that
-`google-auth` plus `httpx` costs less memory than `google-api-python-client`,
-because the latter loads large discovery documents. The first half of that is
-true by a rounding error. The second half is the wrong reason.
+[ADR-5](../../docs/adr/0005-python-fastapi-and-svelte.md) chose `google-auth`
+plus `httpx` over `google-api-python-client` and gave no reason for it. The
+reason lives in three other files -- `CLAUDE.md`, `CONTRIBUTING.md` and
+`docs/sdd.md` §5.2 all say `google-api-python-client` loads large discovery
+documents into memory. That is the claim this spike set out to put a number
+behind, and the number does not support it.
 
 ```
 stack                            RSS  over baseline    import
 baseline                      8.7 MB              -   0.000 s
-httpx only (this spike)      22.0 MB       +13.2 MB   0.055 s
-google-auth + httpx          40.4 MB       +31.7 MB   0.146 s
-google-api-python-client     40.3 MB       +31.6 MB   0.136 s
+httpx only (this spike)      22.0 MB       +13.3 MB   0.057 s
+google-auth + httpx          40.4 MB       +31.7 MB   0.142 s
+google-api-python-client     40.4 MB       +31.7 MB   0.160 s
 
-python 3.11.15 on linux, x86
+python 3.11.15 on linux. Not a Pi: the
+ratio between stacks carries to arm64, the absolute RSS does not.
+Retake on hardware before quoting it against the 200MB ceiling.
 ```
 
-Reproduce with `python3 measure.py`. Three consecutive runs agreed to within
-0.2MB.
+Reproduce with `python3 measure.py`. Successive runs vary by about 0.2MB and
+the import timings by more than that, so read the RSS column and ignore small
+movements in the last digit.
 
 Two things fall out of that table.
 
-**The two stacks ADR-5 compared cost the same.** 31.7MB against 31.6MB is not
-a difference. Building the Calendar service from its bundled discovery
-document costs 0.5MB, measured separately, so the discovery document is not
-where `google-api-python-client`'s memory goes.
+**The two stacks cost the same.** Both land on 31.7MB over baseline. Building
+the Calendar service from its bundled discovery document costs 0.61MB,
+measured three times and not by `measure.py`, which bundles import and build
+into one figure:
 
-**`google-auth` is the expensive half of the stack ADR-5 chose.** Importing
+```
+python3 -c "
+import googleapiclient.discovery as d
+rss = lambda: int(open('/proc/self/status').read().split('VmRSS:')[1].split()[0])/1024
+a = rss(); d.build('calendar','v3',static_discovery=True,developerKey='u')
+print('%.2f MB' % (rss() - a))"
+```
+
+So the discovery document is not where `google-api-python-client`'s memory
+goes.
+
+One honest limit on that. This measures the *static* discovery path, where the
+document ships inside the wheel. The default `build()` fetches it over HTTP
+instead, and that could not be measured here because it needs a valid API key.
+The bundled `calendar.v3.json` is 133KB, so a fetched copy is very unlikely to
+cost meaningfully more -- but "unlikely" is the honest word, and this spike is
+saying "never measured" about somebody else's claim.
+
+**`google-auth` is nearly all of the stack ADR-5 chose.** Measured
+marginally, adding `google-auth` on top of `httpx` costs 18.5MB, while adding
+`httpx` on top of `google-auth` costs 1.0MB. Importing
 `google.oauth2.credentials` alone costs 23MB, because it reaches
 `google.auth.jwt`, which imports `cryptography`, which loads the OpenSSL
 bindings. Importing `google.auth.transport.requests` adds `requests` on top of
@@ -40,7 +66,7 @@ the `httpx` already there, so the process carries two HTTP clients.
 A Pi refreshing an OAuth token does not verify a JWT signature. It posts a
 refresh token to `https://oauth2.googleapis.com/token` and reads JSON back
 over TLS that `httpx` has already validated. `client.py` does exactly that in
-ten lines, and the library those ten lines replace costs 18MB of a 200MB
+ten lines, and the library those ten lines replace costs 18.5MB of a 200MB
 budget.
 
 The honest caveat, from #29 and repeated here so it does not get lost: these

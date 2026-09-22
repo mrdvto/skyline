@@ -71,10 +71,12 @@ Brevity is not omission. Say when something is uncertain, when a claim was not
 verified, and when the maintainer is wrong. Those earn their words; a summary
 of work they just watched does not.
 
-This is separate from the standards below, which govern text that lands in the
-repository.
+This is separate from the standards below, which govern code and prose that
+land in the repository. It restates the maintainer's account-level preference
+so it still applies in sessions running without that account; if the two ever
+disagree, the account preference wins.
 
-### Prose that ships
+### Code and prose that ship
 
 Two standards, and they now live in different places.
 

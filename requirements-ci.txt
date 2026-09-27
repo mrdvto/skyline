@@ -7,5 +7,5 @@
 # PyYAML is deliberately absent: the YAML check uses the copy that ships
 # with the runner's python3, and pinning it here collides with the
 # distribution-managed PyYAML on a Debian-based machine.
-actionlint-py==1.7.12.24
+actionlint-py==1.7.12.25
 shellcheck-py==0.11.0.1
